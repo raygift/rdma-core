@@ -123,6 +123,10 @@ static struct rs_svc connect_svc = {
 	.context_size = sizeof(struct pollfd),
 	.run = cm_svc_run
 };
+static struct rs_svc accept_svc = {
+	.context_size = sizeof(struct pollfd),
+	.run = cm_svc_run
+};
 
 static uint32_t pollcnt;
 static bool suspendpoll;
@@ -1345,6 +1349,10 @@ int raccept(int socket, struct sockaddr *addr, socklen_t *addrlen)
 
 	if (addr && addrlen)
 		rgetpeername(new_rs->index, addr, addrlen);
+	/* The app can still drive the CM state on failure */
+	int save_errno = errno;
+	rs_notify_svc(&accept_svc, new_rs, RS_SVC_ADD_CM);
+	errno = save_errno;
 	return new_rs->index;
 }
 
