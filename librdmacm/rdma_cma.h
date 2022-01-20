@@ -38,7 +38,8 @@
 #include <sys/socket.h>
 #include <infiniband/verbs.h>
 #include <infiniband/sa.h>
-
+#include <arpa/inet.h>
+#include <stdio.h>
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -668,6 +669,14 @@ static inline struct sockaddr *rdma_get_local_addr(struct rdma_cm_id *id)
 
 static inline struct sockaddr *rdma_get_peer_addr(struct rdma_cm_id *id)
 {
+		struct sockaddr_in *ipv4 = (struct sockaddr_in *)&id->route.addr.dst_addr;
+char ipAddress[INET_ADDRSTRLEN];
+
+inet_ntop(AF_INET, &(ipv4->sin_addr), ipAddress, INET_ADDRSTRLEN);
+
+ int port = ntohs(ipv4->sin_port);
+	printf("rdma_get_peer_addr %s %d, id:%d new_rs->qp %d\n",ipAddress,port,id->channel->fd,id->qp->qp_num);
+
 	return &id->route.addr.dst_addr;
 }
 

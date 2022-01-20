@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "timeb.h": "c",
+        "marshall.h": "c",
+        "driver.h": "c"
+    }
+}

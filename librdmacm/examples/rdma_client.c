@@ -36,7 +36,7 @@
 #include <rdma/rdma_cma.h>
 #include <rdma/rdma_verbs.h>
 
-static const char *server = "127.0.0.1";
+static const char *server = "192.168.124.128";
 static const char *port = "7471";
 
 static struct rdma_cm_id *id;
