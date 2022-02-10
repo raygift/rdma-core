@@ -142,10 +142,10 @@ static struct rs_svc connect_svc = {
 	.context_size = sizeof(struct pollfd),
 	.run = cm_svc_run
 };
-// static struct rs_svc accept_svc = {
-// 	.context_size = sizeof(struct pollfd),
-// 	.run = cm_svc_run
-// };
+static struct rs_svc accept_svc = {
+	.context_size = sizeof(struct pollfd),
+	.run = cm_svc_run
+};
 
 static uint32_t pollcnt;
 static bool suspendpoll;
@@ -530,8 +530,8 @@ static int rs_notify_svc(struct rs_svc *svc, struct rsocket *rs, int cmd)
 		svcStr="listen_svc";
 	else if (svc==&connect_svc)
 		svcStr="connect_svc";
-	// else if (svc==&accept_svc)
-	// 	svcStr="accept_svc";
+	else if (svc==&accept_svc)
+		svcStr="accept_svc";
 	else
 		svcStr="other svc";
 	// pid_t pid=getpid();
@@ -1441,8 +1441,10 @@ int raccept(int socket, struct sockaddr *addr, socklen_t *addrlen)
 		return ERR(EBADF);
 
 	ret = read(rs->accept_queue[0], &new_rs, sizeof(new_rs));
-	if (ret != sizeof(new_rs))
+	if (ret != sizeof(new_rs)){
+		// printf("%s %ld raccept return after read socket:%d, new_rs:%d, new_rs->qp %d\n",log1_Time(),getNs(),socket,new_rs->index,new_rs->cm_id->qp->qp_num);
 		return ret;
+	}
 
 	if (addr && addrlen)
 		rgetpeername(new_rs->index, addr, addrlen);
@@ -1458,7 +1460,7 @@ inet_ntop(AF_INET, &(ipv4->sin_addr), ipAddress, INET_ADDRSTRLEN);
 	/* The app can still drive the CM state on failure */
 	int save_errno = errno;
 	// rs_notify_svc(&connect_svc, new_rs, RS_SVC_ADD_CM);
-	// rs_notify_svc(&accept_svc, new_rs, RS_SVC_ADD_CM);
+	rs_notify_svc(&accept_svc, new_rs, RS_SVC_ADD_CM);
 	errno = save_errno;
 	return new_rs->index;
 }
@@ -3667,8 +3669,11 @@ int rclose(int socket)
 
 	if (rs->type == SOCK_STREAM) {
 		if (rs->state & rs_connected){
+			printf("%s %ld rsocket debug: rclose socket:%d, rs->index:%d need shutdown\n",log1_Time(),getNs(),socket,rs->index);
+
 			rshutdown(socket, SHUT_RDWR);
-rdma_disconnect(rs->cm_id);
+		}else{
+					rdma_disconnect(rs->cm_id);
 		}
 		if (rs->opts & RS_OPT_KEEPALIVE)
 			rs_notify_svc(&tcp_svc, rs, RS_SVC_REM_KEEPALIVE);
@@ -3676,7 +3681,7 @@ rdma_disconnect(rs->cm_id);
 			rs_notify_svc(&listen_svc, rs, RS_SVC_REM_CM);
 		if (rs->opts & RS_OPT_CM_SVC){
 				rs_notify_svc(&connect_svc, rs, RS_SVC_REM_CM);
-				// rs_notify_svc(&accept_svc, rs, RS_SVC_REM_CM);
+				rs_notify_svc(&accept_svc, rs, RS_SVC_REM_CM);
 		}
 
 	} else {
@@ -4345,11 +4350,25 @@ static int rs_svc_grow_sets(struct rs_svc *svc, int grow_size)
 	return 0;
 }
 
+static int rs_svc_index(struct rs_svc *svc, struct rsocket *rs)
+{
+	int i;
+
+	for (i = 1; i <= svc->cnt; i++) {
+		if (svc->rss[i] == rs)
+			return i;
+	}
+	return -1;
+}
+
 /*
  * Index 0 is reserved for the service's communication socket.
  */
 static int rs_svc_add_rs(struct rs_svc *svc, struct rsocket *rs)
 {
+	if (rs_svc_index(svc,rs)>=0){// prevent app call raccept() for no-blocking rs using loop statement (for/while), result in adding duplicate rs
+		return 0;
+	}
 	int ret;
 
 	if (svc->cnt >= svc->size - 1) {
@@ -4362,16 +4381,6 @@ static int rs_svc_add_rs(struct rs_svc *svc, struct rsocket *rs)
 	return 0;
 }
 
-static int rs_svc_index(struct rs_svc *svc, struct rsocket *rs)
-{
-	int i;
-
-	for (i = 1; i <= svc->cnt; i++) {
-		if (svc->rss[i] == rs)
-			return i;
-	}
-	return -1;
-}
 
 static int rs_svc_rm_rs(struct rs_svc *svc, struct rsocket *rs)
 {
@@ -4734,7 +4743,7 @@ static void rs_handle_cm_event(struct rsocket *rs)
 		    (rs->cm_id->event->event == RDMA_CM_EVENT_DISCONNECTED)){
 			printf("%s %ld rsocket debug: rs_handle_cm_event RDMA_CM_EVENT_DISCONNECTED rs->index:%d ucma_complete(%d)\n",log1_Time(),getNs(),rs->index,rs->cm_id->channel->fd);
 			rs->state = rs_disconnected;
-rdma_disconnect(rs->cm_id);
+// rdma_disconnect(rs->cm_id);
 			}
 	}
 
