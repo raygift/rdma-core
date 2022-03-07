@@ -79,25 +79,25 @@ do {						\
 } while (0)
 
 #define UCMA_INVALID_IB_INDEX -1
-char*   log_Time(void)
-{
-        struct  tm      *ptm;
-        struct  timeb   stTimeb;
-        static  char    szTime[19];
+// char*   log_Time(void)
+// {
+//         struct  tm      *ptm;
+//         struct  timeb   stTimeb;
+//         static  char    szTime[19];
  
-        ftime(&stTimeb);
-        ptm = localtime(&stTimeb.time);
+//         ftime(&stTimeb);
+//         ptm = localtime(&stTimeb.time);
 
-        sprintf(szTime, "%02d-%02d %02d:%02d:%02d.%03d",
-                ptm->tm_mon+1, ptm->tm_mday, ptm->tm_hour, ptm->tm_min, ptm->tm_sec, stTimeb.millitm);
-        szTime[18] = 0;
-        return szTime;
-}
-long int get1Ns(void){
-	struct timespec timestamp;
-    clock_gettime(CLOCK_REALTIME, &timestamp);
-	return timestamp.tv_nsec;
-}
+//         printf(szTime, "%02d-%02d %02d:%02d:%02d.%03d",
+//                 ptm->tm_mon+1, ptm->tm_mday, ptm->tm_hour, ptm->tm_min, ptm->tm_sec, stTimeb.millitm);
+//         szTime[18] = 0;
+//         return szTime;
+// }
+// long int get1Ns(void){
+// 	struct timespec timestamp;
+//     clock_gettime(CLOCK_REALTIME, &timestamp);
+// 	return timestamp.tv_nsec;
+// }
 struct cma_port {
 	uint8_t			link_layer;
 };
@@ -756,9 +756,9 @@ static struct cma_id_private *ucma_alloc_id(struct rdma_event_channel *channel,
 		if (!id_priv->id.channel)
 			goto err;
 		id_priv->sync = 1;
-		pid_t pid=getpid();
-		pthread_t tid=pthread_self();
-		printf("%s %ld rsocket debug: pid:%u tid:%u ucma_alloc_id create event_channel %d\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id_priv->id.channel->fd);
+		// pid_t pid=getpid();
+		// pthread_t tid=pthread_self();
+		// printf("%s %ld rsocket debug: pid:%u tid:%u ucma_alloc_id create event_channel %d\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id_priv->id.channel->fd);
 
 	} else {
 		id_priv->id.channel = channel;
@@ -806,9 +806,9 @@ static int rdma_create_id2(struct rdma_event_channel *channel,
 
 	id_priv->handle = resp.id;
 
-	// pid_t pid=getpid();
-	// pthread_t tid=pthread_self();
-	// printf("%s %ld rsocket debug: pid:%u tid:%u rdma_create_id2(%d) got id_priv->handle %d\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id_priv->id.channel->fd,id_priv->handle);
+	// // pid_t pid=getpid();
+	// // pthread_t tid=pthread_self();
+	// // printf("%s %ld rsocket debug: pid:%u tid:%u rdma_create_id2(%d) got id_priv->handle %d\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id_priv->id.channel->fd,id_priv->handle);
 
 	ucma_insert_id(id_priv);
 	*id = &id_priv->id;
@@ -822,9 +822,9 @@ int rdma_create_id(struct rdma_event_channel *channel,
 		   struct rdma_cm_id **id, void *context,
 		   enum rdma_port_space ps)
 {
-	pid_t pid=getpid();
-	pthread_t tid=pthread_self();
-	printf("%s %ld rsocket debug: pid:%u tid:%u rdma_create_id\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid);
+	// pid_t pid=getpid();
+	// pthread_t tid=pthread_self();
+	// printf("%s %ld rsocket debug: pid:%u tid:%u rdma_create_id\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid);
 	enum ibv_qp_type qp_type;
 
 	qp_type = (ps == RDMA_PS_IPOIB || ps == RDMA_PS_UDP) ?
@@ -861,9 +861,9 @@ int rdma_destroy_id(struct rdma_cm_id *id)
 		return ret;
 
 	if (id_priv->id.event){
-		pid_t pid=getpid();
-		pthread_t tid=pthread_self();
-		printf("%s %ld rsocket debug: pid:%u tid:%u rdma_destroy_id(%d) will ack_cm_event\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id->channel->fd);
+		// pid_t pid=getpid();
+		// pthread_t tid=pthread_self();
+		// printf("%s %ld rsocket debug: pid:%u tid:%u rdma_destroy_id(%d) will ack_cm_event\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id->channel->fd);
 
 		rdma_ack_cm_event(id_priv->id.event);
 	
@@ -1139,15 +1139,15 @@ int ucma_complete(struct rdma_cm_id *id)
 
 	id_priv = container_of(id, struct cma_id_private, id);
 	
-	pid_t pid=getpid();
-	pthread_t tid=pthread_self();
-	// printf("%s %ld rsocket debug: pid:%u tid:%u ucma_complete(%d) id_priv->sync %d\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id->channel->fd,id_priv->sync);
+	// pid_t pid=getpid();
+	// pthread_t tid=pthread_self();
+	// // printf("%s %ld rsocket debug: pid:%u tid:%u ucma_complete(%d) id_priv->sync %d\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id->channel->fd,id_priv->sync);
 
 	if (!id_priv->sync)
 		return 0;
 
 	if (id_priv->id.event) {
-		printf("%s %ld rsocket debug: pid:%u tid:%u ucma_complete(%d) will ack_cm_event %s\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id->channel->fd,rdma_event_str(id_priv->id.event->event));
+		// printf("%s %ld rsocket debug: pid:%u tid:%u ucma_complete(%d) will ack_cm_event %s\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id->channel->fd,rdma_event_str(id_priv->id.event->event));
 		rdma_ack_cm_event(id_priv->id.event);
 		id_priv->id.event = NULL;
 	}
@@ -1157,7 +1157,7 @@ int ucma_complete(struct rdma_cm_id *id)
 		return ret;
 
 	if (id_priv->id.event->status) {
-		printf("%s %ld rsocket debug: pid:%u tid:%u ucma_complete(%d) rdma_get_cm_event %s\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id->channel->fd,rdma_event_str(id_priv->id.event->event));
+		// printf("%s %ld rsocket debug: pid:%u tid:%u ucma_complete(%d) rdma_get_cm_event %s\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id->channel->fd,rdma_event_str(id_priv->id.event->event));
 
 		if (id_priv->id.event->event == RDMA_CM_EVENT_REJECTED)
 			ret = ERR(ECONNREFUSED);
@@ -1191,9 +1191,9 @@ static int rdma_resolve_addr2(struct rdma_cm_id *id, struct sockaddr *src_addr,
 		return (ret >= 0) ? ERR(ENODATA) : -1;
 
 	memcpy(&id->route.addr.dst_addr, dst_addr, dst_len);
-				pid_t pid=getpid();
-			pthread_t tid=pthread_self();
-	printf("%s %ld rsocket debug: pid:%u tid:%u rdma_resolve_addr2 call ucma_complete(%d)\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id->channel->fd);
+				// pid_t pid=getpid();
+			// pthread_t tid=pthread_self();
+	// printf("%s %ld rsocket debug: pid:%u tid:%u rdma_resolve_addr2 call ucma_complete(%d)\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id->channel->fd);
 
 	return ucma_complete(id);
 }
@@ -1230,9 +1230,9 @@ int rdma_resolve_addr(struct rdma_cm_id *id, struct sockaddr *src_addr,
 		return (ret >= 0) ? ERR(ENODATA) : -1;
 
 	memcpy(&id->route.addr.dst_storage, dst_addr, dst_len);
-					pid_t pid=getpid();
-			pthread_t tid=pthread_self();
-	printf("%s %ld rsocket debug: pid:%u tid:%u rdma_resolve_addr call ucma_complete(%d)\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id->channel->fd);
+					// pid_t pid=getpid();
+			// pthread_t tid=pthread_self();
+	// printf("%s %ld rsocket debug: pid:%u tid:%u rdma_resolve_addr call ucma_complete(%d)\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id->channel->fd);
 
 	return ucma_complete(id);
 }
@@ -1287,9 +1287,9 @@ int rdma_resolve_route(struct rdma_cm_id *id, int timeout_ms)
 
 out:
 
-	// pid_t pid=getpid();
-	// pthread_t tid=pthread_self();
-	printf("%s %ld rsocket debug: pid:%u tid:%u rdma_resolve_route call ucma_complete(%d)\n",log_Time(),get1Ns(),(unsigned int)getpid(),(unsigned int)pthread_self(),id->channel->fd);
+	// // pid_t pid=getpid();
+	// // pthread_t tid=pthread_self();
+	// printf("%s %ld rsocket debug: pid:%u tid:%u rdma_resolve_route call ucma_complete(%d)\n",log_Time(),get1Ns(),(unsigned int)getpid(),(unsigned int)pthread_self(),id->channel->fd);
 
 	return ucma_complete(id);
 }
@@ -1311,9 +1311,9 @@ int rdma_init_qp_attr(struct rdma_cm_id *id, struct ibv_qp_attr *qp_attr,
 	id_priv = container_of(id, struct cma_id_private, id);
 	cmd.id = id_priv->handle;
 	cmd.qp_state = qp_attr->qp_state;
-	// pid_t pid=getpid();
-	// pthread_t tid=pthread_self();
-	// printf("%s %ld rsocket debug: pid:%u tid:%u rdma_init_qp_attr(%d) got id_priv->handle %d\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id_priv->id.channel->fd,id_priv->handle);
+	// // pid_t pid=getpid();
+	// // pthread_t tid=pthread_self();
+	// // printf("%s %ld rsocket debug: pid:%u tid:%u rdma_init_qp_attr(%d) got id_priv->handle %d\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id_priv->id.channel->fd,id_priv->handle);
 
 	ret = write(id->channel->fd, &cmd, sizeof cmd);
 	if (ret != sizeof cmd)
@@ -1323,7 +1323,7 @@ int rdma_init_qp_attr(struct rdma_cm_id *id, struct ibv_qp_attr *qp_attr,
 
 	ibv_copy_qp_attr_from_kern(qp_attr, &resp);
 	*qp_attr_mask = resp.qp_attr_mask;
-	// printf("%s %ld rsocket debug: pid:%u tid:%u rdma_init_qp_attr(%d) got qp_attr dest_qp_num(%u) port_num(%u) qp_state(%d) sq_psn(%u) rq_psn(%u) qkey(%u)\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id_priv->id.channel->fd,qp_attr->dest_qp_num,qp_attr->port_num,qp_attr->qp_state,qp_attr->sq_psn,qp_attr->rq_psn,qp_attr->qkey);
+	// // printf("%s %ld rsocket debug: pid:%u tid:%u rdma_init_qp_attr(%d) got qp_attr dest_qp_num(%u) port_num(%u) qp_state(%d) sq_psn(%u) rq_psn(%u) qkey(%u)\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id_priv->id.channel->fd,qp_attr->dest_qp_num,qp_attr->port_num,qp_attr->qp_state,qp_attr->sq_psn,qp_attr->rq_psn,qp_attr->qkey);
 
 	return 0;
 }
@@ -1367,9 +1367,9 @@ static int ucma_modify_qp_rtr(struct rdma_cm_id *id, uint8_t resp_res)
 	if (resp_res != RDMA_MAX_RESP_RES)
 		qp_attr.max_dest_rd_atomic = resp_res;
 
-	pid_t pid=getpid();
-	pthread_t tid=pthread_self();
-	printf("%s %ld rsocket debug: pid:%u tid:%u ucma_modify_qp_rtr(%d) got qp_attr dest_qp_num(%u) port_num(%u) qp_state(%d)\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id_priv->id.channel->fd,qp_attr.dest_qp_num,qp_attr.port_num,qp_attr.cur_qp_state);
+	// pid_t pid=getpid();
+	// pthread_t tid=pthread_self();
+	// printf("%s %ld rsocket debug: pid:%u tid:%u ucma_modify_qp_rtr(%d) got qp_attr dest_qp_num(%u) port_num(%u) qp_state(%d)\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id_priv->id.channel->fd,qp_attr.dest_qp_num,qp_attr.port_num,qp_attr.cur_qp_state);
 
 	return rdma_seterrno(ibv_modify_qp(id->qp, &qp_attr, qp_attr_mask));
 }
@@ -1390,9 +1390,9 @@ static int ucma_modify_qp_rts(struct rdma_cm_id *id, uint8_t init_depth)
 	if (init_depth != RDMA_MAX_INIT_DEPTH)
 		qp_attr.max_rd_atomic = init_depth;
 
-	pid_t pid=getpid();
-	pthread_t tid=pthread_self();
-	printf("%s %ld rsocket debug: pid:%u tid:%u ucma_modify_qp_rts(%d) got qp_attr dest_qp_num(%u) port_num(%u) qp_state(%d)\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id->channel->fd,qp_attr.dest_qp_num,qp_attr.port_num,qp_attr.cur_qp_state);
+	// pid_t pid=getpid();
+	// pthread_t tid=pthread_self();
+	// printf("%s %ld rsocket debug: pid:%u tid:%u ucma_modify_qp_rts(%d) got qp_attr dest_qp_num(%u) port_num(%u) qp_state(%d)\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id->channel->fd,qp_attr.dest_qp_num,qp_attr.port_num,qp_attr.cur_qp_state);
 
 	return rdma_seterrno(ibv_modify_qp(id->qp, &qp_attr, qp_attr_mask));
 }
@@ -1782,7 +1782,7 @@ int rdma_create_qp(struct rdma_cm_id *id, struct ibv_pd *pd,
 void rdma_destroy_qp(struct rdma_cm_id *id)
 {
 
-	printf("%s %ld rdma_destroy_qp %d\n",log_Time(),get1Ns(),id->qp->qp_num);
+	// printf("%s %ld rdma_destroy_qp %d\n",log_Time(),get1Ns(),id->qp->qp_num);
 	ibv_destroy_qp(id->qp);
 	id->qp = NULL;
 	ucma_destroy_cqs(id);
@@ -1876,7 +1876,7 @@ int rdma_connect(struct rdma_cm_id *id, struct rdma_conn_param *conn_param)
 
 	CMA_INIT_CMD(&cmd, sizeof cmd, CONNECT);
 	cmd.id = id_priv->handle;
-	printf("%s %ld rsocket debug: rdma_connect will write to fd (%d) with cmd.id %d\n",log_Time(),get1Ns(),id->channel->fd,cmd.id);
+	// printf("%s %ld rsocket debug: rdma_connect will write to fd (%d) with cmd.id %d\n",log_Time(),get1Ns(),id->channel->fd,cmd.id);
 	if (id->qp) {
 		qp_num = id->qp->qp_num;
 		srq = !!id->qp->srq;
@@ -1895,9 +1895,9 @@ int rdma_connect(struct rdma_cm_id *id, struct rdma_conn_param *conn_param)
 		free(id_priv->connect);
 		id_priv->connect_len = 0;
 	}
-	pid_t pid=getpid();
-	pthread_t tid=pthread_self();
-	printf("%s %ld rsocket debug: pid:%u tid:%u rdma_connect call ucma_complete(%d)\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id->channel->fd);
+	// pid_t pid=getpid();
+	// pthread_t tid=pthread_self();
+	// printf("%s %ld rsocket debug: pid:%u tid:%u rdma_connect call ucma_complete(%d)\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id->channel->fd);
 
 	return ucma_complete(id);
 }
@@ -1934,9 +1934,9 @@ int rdma_get_request(struct rdma_cm_id *listen, struct rdma_cm_id **id)
 		return ERR(EINVAL);
 
 	if (listen->event) {
-		pid_t pid=getpid();
-		pthread_t tid=pthread_self();
-		printf("%s %ld rsocket debug: pid:%u tid:%u rdma_get_request(%d) will ack_cm_event\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id_priv->id.channel->fd);
+		// pid_t pid=getpid();
+		// pthread_t tid=pthread_self();
+		// printf("%s %ld rsocket debug: pid:%u tid:%u rdma_get_request(%d) will ack_cm_event\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id_priv->id.channel->fd);
 
 		rdma_ack_cm_event(listen->event);
 		listen->event = NULL;
@@ -2038,9 +2038,9 @@ int rdma_accept(struct rdma_cm_id *id, struct rdma_conn_param *conn_param)
 
 	if (ucma_is_ud_qp(id->qp_type))
 		return 0;
-							pid_t pid=getpid();
-			pthread_t tid=pthread_self();
-	printf("%s %ld rsocket debug: pid:%u tid:%u rdma_accept call ucma_complete(%d)\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id->channel->fd);
+							// pid_t pid=getpid();
+			// pthread_t tid=pthread_self();
+	// printf("%s %ld rsocket debug: pid:%u tid:%u rdma_accept call ucma_complete(%d)\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id->channel->fd);
 	return ucma_complete(id);
 }
 
@@ -2101,7 +2101,7 @@ int rdma_notify(struct rdma_cm_id *id, enum ibv_event_type event)
 
 int ucma_shutdown(struct rdma_cm_id *id)
 {
-	printf("%s %ld rsocket debug: ucma_shutdown id(%p) fd(%d)\n",log_Time(),get1Ns(),id,id->channel->fd);
+	// printf("%s %ld rsocket debug: ucma_shutdown id(%p) fd(%d)\n",log_Time(),get1Ns(),id,id->channel->fd);
 
 	if (!id->verbs || !id->verbs->device)
 		return ERR(EINVAL);
@@ -2121,8 +2121,8 @@ int rdma_disconnect(struct rdma_cm_id *id)
 	struct ucma_abi_disconnect cmd;
 	struct cma_id_private *id_priv;
 	int ret;
-pid_t pid=getpid();
-pthread_t tid=pthread_self();
+// pid_t pid=getpid();
+// pthread_t tid=pthread_self();
 	ret = ucma_shutdown(id);
 	if (ret)
 		return ret;
@@ -2130,15 +2130,15 @@ pthread_t tid=pthread_self();
 	CMA_INIT_CMD(&cmd, sizeof cmd, DISCONNECT);
 	id_priv = container_of(id, struct cma_id_private, id);
 	cmd.id = id_priv->handle;
-printf("%s %ld rsocket debug: pid:%u tid:%u rdma_disconnect(%d) before write errno(%d)\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id->channel->fd,errno);
+// printf("%s %ld rsocket debug: pid:%u tid:%u rdma_disconnect(%d) before write errno(%d)\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id->channel->fd,errno);
 
 	ret = write(id->channel->fd, &cmd, sizeof cmd);
-printf("%s %ld rsocket debug: pid:%u tid:%u rdma_disconnect(%d) ucma_wirte ret(%d) errno(%d)\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id->channel->fd,ret,errno);
+// printf("%s %ld rsocket debug: pid:%u tid:%u rdma_disconnect(%d) ucma_wirte ret(%d) errno(%d)\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id->channel->fd,ret,errno);
 
 	if (ret != sizeof cmd)
 		return (ret >= 0) ? ERR(ENODATA) : -1;
 
-printf("%s %ld rsocket debug: pid:%u tid:%u rdma_disconnect(%d) write ret(%d) will ucma_complete\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id->channel->fd,ret);
+// printf("%s %ld rsocket debug: pid:%u tid:%u rdma_disconnect(%d) write ret(%d) will ucma_complete\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id->channel->fd,ret);
 	return ucma_complete(id);
 }
 
@@ -2203,9 +2203,9 @@ static int rdma_join_multicast2(struct rdma_cm_id *id, struct sockaddr *addr,
 	VALGRIND_MAKE_MEM_DEFINED(&resp, sizeof resp);
 
 	mc->handle = resp.id;
-				pid_t pid=getpid();
-			pthread_t tid=pthread_self();
-	printf("%s %ld rsocket debug: pid:%u tid:%u rdma_join_multicast2 call ucma_complete(%d)\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id->channel->fd);
+				// pid_t pid=getpid();
+			// pthread_t tid=pthread_self();
+	// printf("%s %ld rsocket debug: pid:%u tid:%u rdma_join_multicast2 call ucma_complete(%d)\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id->channel->fd);
 
 	return ucma_complete(id);
 
@@ -2334,9 +2334,9 @@ int rdma_ack_cm_event(struct rdma_cm_event *event)
 
 	evt = container_of(event, struct cma_event, event);
 	
-	pid_t pid=getpid();
-	pthread_t tid=pthread_self();
-	// printf("%s %ld rsocket debug: pid:%u tid:%u rdma_ack_cm_event %d\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,evt->id_priv->id.channel->fd);
+	// pid_t pid=getpid();
+	// pthread_t tid=pthread_self();
+	// // printf("%s %ld rsocket debug: pid:%u tid:%u rdma_ack_cm_event %d\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,evt->id_priv->id.channel->fd);
 
 	if (evt->mc)
 		ucma_complete_mc_event(evt->mc);
@@ -2420,10 +2420,10 @@ static int ucma_process_conn_req(struct cma_event *evt, uint32_t handle,
 	id_priv->responder_resources = evt->event.param.conn.responder_resources;
 	id_priv->remote_ece.vendor_id = ece->vendor_id;
 	id_priv->remote_ece.options = ece->attr_mod;
-	pid_t pid=getpid();
-	pthread_t tid=pthread_self();
+	// pid_t pid=getpid();
+	// pthread_t tid=pthread_self();
 	if (evt->id_priv->sync) {
-		printf("%s %ld rsocket debug: pid:%u tid:%u ucma_process_conn_req will call rdma_migrate_id(%d,NULL)\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id_priv->id.channel->fd);
+		// printf("%s %ld rsocket debug: pid:%u tid:%u ucma_process_conn_req will call rdma_migrate_id(%d,NULL)\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id_priv->id.channel->fd);
 
 		ret = rdma_migrate_id(&id_priv->id, NULL);
 		if (ret)
@@ -2474,7 +2474,7 @@ err:
 static int ucma_process_conn_resp_ece(struct cma_id_private *id_priv,
 				      struct ucma_abi_ece *ece)
 {
-	printf("%s %ld rsocket debug: ucma_process_conn_resp_ece %d\n",log_Time(),get1Ns(),id_priv->id.channel->fd);
+	// printf("%s %ld rsocket debug: ucma_process_conn_resp_ece %d\n",log_Time(),get1Ns(),id_priv->id.channel->fd);
 
 	struct ibv_ece ibv_ece = { .vendor_id = ece->vendor_id,
 				   .options = ece->attr_mod };
@@ -2591,8 +2591,8 @@ int rdma_get_cm_event(struct rdma_event_channel *channel,
 	struct cma_event *evt;
 	int ret;
 	
-		pid_t pid=getpid();
-		pthread_t tid=pthread_self();
+		// pid_t pid=getpid();
+		// pthread_t tid=pthread_self();
 		// printf("%s %ld rsocket debug: pid:%u tid:%u rdma_get_cm_event(%d) was called\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,channel->fd);
 
 	ret = ucma_init();
@@ -2645,17 +2645,17 @@ retry:
 
 	switch (resp.event) {
 	case RDMA_CM_EVENT_ADDR_RESOLVED:
-		printf("%s %ld rsocket debug: rdma_get_cm_event got RDMA_CM_EVENT_ADDR_RESOLVED event:%d status:%d\n",log_Time(),get1Ns(),evt->event.event,evt->event.status);
+		// printf("%s %ld rsocket debug: rdma_get_cm_event got RDMA_CM_EVENT_ADDR_RESOLVED event:%d status:%d\n",log_Time(),get1Ns(),evt->event.event,evt->event.status);
 
 		ucma_process_addr_resolved(evt);
 		break;
 	case RDMA_CM_EVENT_ROUTE_RESOLVED:
-		printf("%s %ld rsocket debug: rdma_get_cm_event got RDMA_CM_EVENT_ROUTE_RESOLVED event:%d status:%d\n",log_Time(),get1Ns(),evt->event.event,evt->event.status);
+		// printf("%s %ld rsocket debug: rdma_get_cm_event got RDMA_CM_EVENT_ROUTE_RESOLVED event:%d status:%d\n",log_Time(),get1Ns(),evt->event.event,evt->event.status);
 
 		ucma_process_route_resolved(evt);
 		break;
 	case RDMA_CM_EVENT_CONNECT_REQUEST:
-		printf("%s %ld rsocket debug: rdma_get_cm_event got RDMA_CM_EVENT_CONNECT_REQUEST event:%d status:%d\n",log_Time(),get1Ns(),evt->event.event,evt->event.status);
+		// printf("%s %ld rsocket debug: rdma_get_cm_event got RDMA_CM_EVENT_CONNECT_REQUEST event:%d status:%d\n",log_Time(),get1Ns(),evt->event.event,evt->event.status);
 
 		evt->id_priv = (void *) (uintptr_t) resp.uid;
 		if (ucma_is_ud_qp(evt->id_priv->id.qp_type))
@@ -2668,7 +2668,7 @@ retry:
 			goto retry;
 		break;
 	case RDMA_CM_EVENT_CONNECT_RESPONSE:
-		printf("%s %ld rsocket debug: rdma_get_cm_event got RDMA_CM_EVENT_CONNECT_RESPONSE event:%d status:%d\n",log_Time(),get1Ns(),evt->event.event,evt->event.status);
+		// printf("%s %ld rsocket debug: rdma_get_cm_event got RDMA_CM_EVENT_CONNECT_RESPONSE event:%d status:%d\n",log_Time(),get1Ns(),evt->event.event,evt->event.status);
 
 		ucma_copy_conn_event(evt, &resp.param.conn);
 		if (!evt->id_priv->id.qp) {
@@ -2692,11 +2692,11 @@ retry:
 			break;
 		}
 
-		printf("%s %ld rsocket debug: rdma_get_cm_event got RDMA_CM_EVENT_ESTABLISHED event:%d status:%d\n",log_Time(),get1Ns(),evt->event.event,evt->event.status);
+		// printf("%s %ld rsocket debug: rdma_get_cm_event got RDMA_CM_EVENT_ESTABLISHED event:%d status:%d\n",log_Time(),get1Ns(),evt->event.event,evt->event.status);
 		ucma_copy_conn_event(evt, &resp.param.conn);
 		break;
 	case RDMA_CM_EVENT_REJECTED:
-			printf("%s %ld rsocket debug: rdma_get_cm_event got RDMA_CM_EVENT_REJECTED event:%d status:%d\n",log_Time(),get1Ns(),evt->event.event,evt->event.status);
+			// printf("%s %ld rsocket debug: rdma_get_cm_event got RDMA_CM_EVENT_REJECTED event:%d status:%d\n",log_Time(),get1Ns(),evt->event.event,evt->event.status);
 			// dump_stack();
 		if (evt->id_priv->connect_error) {
 			ucma_complete_event(evt->id_priv);
@@ -2706,7 +2706,7 @@ retry:
 		ucma_modify_qp_err(evt->event.id);
 		break;
 	case RDMA_CM_EVENT_DISCONNECTED:
-			printf("%s %ld rsocket debug: rdma_get_cm_event got event:%d status:%d\n",log_Time(),get1Ns(),resp.event,resp.status);
+			// printf("%s %ld rsocket debug: rdma_get_cm_event got event:%d status:%d\n",log_Time(),get1Ns(),resp.event,resp.status);
 		if (evt->id_priv->connect_error) {
 			ucma_complete_event(evt->id_priv);
 			goto retry;
@@ -2730,7 +2730,7 @@ retry:
 		evt->event.param.ud.private_data = evt->mc->context;
 		break;
 	default:
-			printf("%s %ld rsocket debug: rdma_get_cm_event got event:%d status:%d\n",log_Time(),get1Ns(),resp.event,resp.status);
+			// printf("%s %ld rsocket debug: rdma_get_cm_event got event:%d status:%d\n",log_Time(),get1Ns(),resp.event,resp.status);
 		evt->id_priv = (void *) (uintptr_t) resp.uid;
 		evt->event.id = &evt->id_priv->id;
 		evt->event.status = resp.status;
@@ -2814,8 +2814,8 @@ int rdma_migrate_id(struct rdma_cm_id *id, struct rdma_event_channel *channel)
 	struct cma_id_private *id_priv;
 	int ret, sync;
 
-	pid_t pid=getpid();
-	pthread_t tid=pthread_self();
+	// pid_t pid=getpid();
+	// pthread_t tid=pthread_self();
 
 	id_priv = container_of(id, struct cma_id_private, id);
 	if (id_priv->sync && !channel)
@@ -2830,7 +2830,7 @@ int rdma_migrate_id(struct rdma_cm_id *id, struct rdma_event_channel *channel)
 	CMA_INIT_CMD_RESP(&cmd, sizeof cmd, MIGRATE_ID, &resp, sizeof resp);
 	cmd.id = id_priv->handle;
 	cmd.fd = id->channel->fd;
-	printf("%s %ld rsocket debug: pid:%u tid:%u rdma_migrate_id() old channel fd(%d)\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id->channel->fd);
+	// printf("%s %ld rsocket debug: pid:%u tid:%u rdma_migrate_id() old channel fd(%d)\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id->channel->fd);
 
 	ret = write(channel->fd, &cmd, sizeof cmd);
 	if (ret != sizeof cmd) {
@@ -2843,7 +2843,7 @@ int rdma_migrate_id(struct rdma_cm_id *id, struct rdma_event_channel *channel)
 
 	if (id_priv->sync) {
 		if (id->event) {
-			printf("%s %ld rsocket debug: pid:%u tid:%u rdma_migrate_id() old channel fd(%d) will ack_cm_event\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id->channel->fd);
+			// printf("%s %ld rsocket debug: pid:%u tid:%u rdma_migrate_id() old channel fd(%d) will ack_cm_event\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id->channel->fd);
 
 			rdma_ack_cm_event(id->event);
 			id->event = NULL;
@@ -2862,7 +2862,7 @@ int rdma_migrate_id(struct rdma_cm_id *id, struct rdma_event_channel *channel)
 	id_priv->sync = sync;
 	id->channel = channel;
 
-	printf("%s %ld rsocket debug: pid:%u tid:%u rdma_migrate_id() new channel fd(%d) \n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id->channel->fd);
+	// printf("%s %ld rsocket debug: pid:%u tid:%u rdma_migrate_id() new channel fd(%d) \n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,id->channel->fd);
 		
 	while (id_priv->events_completed < resp.events_reported)
 		pthread_cond_wait(&id_priv->cond, &id_priv->mut);
@@ -2906,9 +2906,9 @@ int rdma_create_ep(struct rdma_cm_id **id, struct rdma_addrinfo *res,
 	struct rdma_cm_id *cm_id;
 	struct cma_id_private *id_priv;
 	int ret;
-			pid_t pid=getpid();
-			pthread_t tid=pthread_self();
-			printf("%s %ld rsocket debug: pid:%u tid:%u rdma_create_ep\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid);
+			// pid_t pid=getpid();
+			// pthread_t tid=pthread_self();
+			// printf("%s %ld rsocket debug: pid:%u tid:%u rdma_create_ep\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid);
 
 	ret = rdma_create_id2(NULL, &cm_id, NULL, res->ai_port_space, res->ai_qp_type);
 	if (ret)
@@ -2933,9 +2933,9 @@ int rdma_create_ep(struct rdma_cm_id **id, struct rdma_addrinfo *res,
 		ret = rdma_set_option(cm_id, RDMA_OPTION_IB, RDMA_OPTION_IB_PATH,
 				      res->ai_route, res->ai_route_len);
 		if (!ret){
-			pid_t pid=getpid();
-			pthread_t tid=pthread_self();
-			printf("%s %ld rsocket debug: pid:%u tid:%u rdma_join_multicast2 call ucma_complete(%d)\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,cm_id->channel->fd);
+			// pid_t pid=getpid();
+			// pthread_t tid=pthread_self();
+			// printf("%s %ld rsocket debug: pid:%u tid:%u rdma_join_multicast2 call ucma_complete(%d)\n",log_Time(),get1Ns(),(unsigned int)pid,(unsigned int)tid,cm_id->channel->fd);
 			ret = ucma_complete(cm_id);
 
 		}

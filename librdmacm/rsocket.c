@@ -61,24 +61,24 @@
 #include "indexer.h"
 
 #include <sys/timeb.h>
-char*   log1_Time(void)
-{
-        struct  tm      *ptm;
-        struct  timeb   stTimeb;
-        static  char    szTime[19];
+// char*   log1_Time(void)
+// {
+//         struct  tm      *ptm;
+//         struct  timeb   stTimeb;
+//         static  char    szTime[19];
  
-        ftime(&stTimeb);
-        ptm = localtime(&stTimeb.time);
-        sprintf(szTime, "%02d-%02d %02d:%02d:%02d.%03d",
-                ptm->tm_mon+1, ptm->tm_mday, ptm->tm_hour, ptm->tm_min, ptm->tm_sec, stTimeb.millitm);
-        szTime[18] = 0;
-        return szTime;
-}
-long int getNs(void){
-	struct timespec timestamp;
-    clock_gettime(CLOCK_REALTIME, &timestamp);
-	return timestamp.tv_nsec;
-}
+//         ftime(&stTimeb);
+//         ptm = localtime(&stTimeb.time);
+//         sprintf(szTime, "%02d-%02d %02d:%02d:%02d.%03d",
+//                 ptm->tm_mon+1, ptm->tm_mday, ptm->tm_hour, ptm->tm_min, ptm->tm_sec, stTimeb.millitm);
+//         szTime[18] = 0;
+//         return szTime;
+// }
+// long int getNs(void){
+// 	struct timespec timestamp;
+//     clock_gettime(CLOCK_REALTIME, &timestamp);
+// 	return timestamp.tv_nsec;
+// }
 #define RS_OLAP_START_SIZE 2048
 #define RS_MAX_TRANSFER 65536
 #define RS_SNDLOWAT 2048
@@ -142,10 +142,10 @@ static struct rs_svc connect_svc = {
 	.context_size = sizeof(struct pollfd),
 	.run = cm_svc_run
 };
-static struct rs_svc accept_svc = {
-	.context_size = sizeof(struct pollfd),
-	.run = cm_svc_run
-};
+// static struct rs_svc accept_svc = {
+// 	.context_size = sizeof(struct pollfd),
+// 	.run = cm_svc_run
+// };
 
 static uint32_t pollcnt;
 static bool suspendpoll;
@@ -462,7 +462,7 @@ static void read_all(int fd, void *msg, size_t len)
 {
 	// FIXME: if fd is a socket this really needs to handle EINTR and other conditions.
 	ssize_t __attribute__((unused)) rc = read(fd, msg, len);
-	// printf("rsocket debug read_all rc %d, len:%d\n",rc,len);
+	// // printf("rsocket debug read_all rc %d, len:%d\n",rc,len);
 	assert(rc == len);
 }
 
@@ -495,49 +495,53 @@ static void ds_remove_qp(struct rsocket *rs, struct ds_qp *qp)
 
 static int rs_notify_svc(struct rs_svc *svc, struct rsocket *rs, int cmd)
 {
-	const char *cmdStr, *svcStr;
-	switch (cmd){
-	case RS_SVC_NOOP:
-		cmdStr="RS_SVC_NOOP";
-		break;
-	case RS_SVC_ADD_DGRAM:
-		cmdStr="RS_SVC_ADD_DGRAM";
-		break;	
-	case RS_SVC_REM_DGRAM:
-		cmdStr="RS_SVC_REM_DGRAM";
-		break;
-	case RS_SVC_ADD_KEEPALIVE:
-		cmdStr="RS_SVC_ADD_KEEPALIVE";
-		break;
-	case RS_SVC_REM_KEEPALIVE:
-		cmdStr="RS_SVC_REM_KEEPALIVE";
-		break;
-	case RS_SVC_MOD_KEEPALIVE:
-		cmdStr="RS_SVC_MOD_KEEPALIVE";
-		break;
-	case RS_SVC_ADD_CM:
-		cmdStr="RS_SVC_ADD_CM";
-		break;
-	case RS_SVC_REM_CM:
-		cmdStr="RS_SVC_REM_CM";
-		break;
-	default:
-		cmdStr="";
-	break;
-	}
+	// const char *cmdStr, *svcStr;
+	// switch (cmd){
+	// case RS_SVC_NOOP:
+	// 	cmdStr="RS_SVC_NOOP";
+	// 	break;
+	// case RS_SVC_ADD_DGRAM:
+	// 	cmdStr="RS_SVC_ADD_DGRAM";
+	// 	break;	
+	// case RS_SVC_REM_DGRAM:
+	// 	cmdStr="RS_SVC_REM_DGRAM";
+	// 	break;
+	// case RS_SVC_ADD_KEEPALIVE:
+	// 	cmdStr="RS_SVC_ADD_KEEPALIVE";
+	// 	break;
+	// case RS_SVC_REM_KEEPALIVE:
+	// 	cmdStr="RS_SVC_REM_KEEPALIVE";
+	// 	break;
+	// case RS_SVC_MOD_KEEPALIVE:
+	// 	cmdStr="RS_SVC_MOD_KEEPALIVE";
+	// 	break;
+	// case RS_SVC_ADD_CM:
+	// 	cmdStr="RS_SVC_ADD_CM";
+	// 	break;
+	// case RS_SVC_REM_CM:
+	// 	cmdStr="RS_SVC_REM_CM";
+	// 	break;
+	// default:
+	// 	cmdStr="";
+	// break;
+	// }
 
-	if (svc==&listen_svc)
-		svcStr="listen_svc";
-	else if (svc==&connect_svc)
-		svcStr="connect_svc";
-	else if (svc==&accept_svc)
-		svcStr="accept_svc";
-	else
-		svcStr="other svc";
-	// pid_t pid=getpid();
-	// pthread_t tid=pthread_self();
-	printf("%s %ld rsocket debug: rs->index:%d rs_notify_svc %s %s\n",log1_Time(),getNs(),rs->index,svcStr,cmdStr);
-	// printf("rsocket debug: rs_notify_svc %s %d\n",cmdStr,rs->index);
+	// if (svc==&listen_svc)
+	// 	svcStr="listen_svc";
+	// else if (svc==&connect_svc)
+	// 	svcStr="connect_svc";
+	// // else if (svc==&accept_svc)
+	// // 	svcStr="accept_svc";
+	// else if (svc==&tcp_svc)
+	// 	svcStr="tcp_svc";
+	// else if (svc==&udp_svc)
+	// 	svcStr="udp_svc";
+	// else
+	// 	svcStr="unknow svc";
+	// // pid_t pid=getpid();
+	// // pthread_t tid=pthread_self();
+	// printf("%s %ld rsocket debug: rs->index:%d rs_notify_svc %s %s\n",log1_Time(),getNs(),rs->index,svcStr,cmdStr);
+	// // printf("rsocket debug: rs_notify_svc %s %d\n",cmdStr,rs->index);
 	struct rs_svc_msg msg;
 	int ret;
 
@@ -994,7 +998,7 @@ static int rs_create_ep(struct rsocket *rs)
 
 	// ret = rdma_create_qp(rs->cm_id, NULL, &qp_attr);
 	ret = rdma_create_qp(rs->cm_id, rs->cm_id->pd, &qp_attr);
-	printf("%s %ld rsocket debug: rs %d rdma_create_qp qp:%p pd:%p\n",log1_Time(),getNs(),rs->cm_id->channel->fd,rs->cm_id->qp,rs->cm_id->pd);
+	// printf("%s %ld rsocket debug: rs %d rdma_create_qp qp:%p pd:%p\n",log1_Time(),getNs(),rs->cm_id->channel->fd,rs->cm_id->qp,rs->cm_id->pd);
 	if (ret)
 		return ret;
 
@@ -1093,9 +1097,9 @@ static void ds_free(struct rsocket *rs)
 	if (rs->sbuf)
 		free(rs->sbuf);
 
-	pid_t pid=getpid();
-	pthread_t tid=pthread_self();
-	printf("%s %ld ds_free parent pid:%u tid:%lx freed rs %d\n",log1_Time(),getNs(),(unsigned int)pid,tid,rs->index);
+	// pid_t pid=getpid();
+	// pthread_t tid=pthread_self();
+	// printf("%s %ld ds_free parent pid:%u tid:%lx freed rs %d\n",log1_Time(),getNs(),(unsigned int)pid,tid,rs->index);
 
 	tdestroy(rs->dest_map, free);
 	fastlock_destroy(&rs->map_lock);
@@ -1140,7 +1144,7 @@ static void rs_free(struct rsocket *rs)
 	if (rs->cm_id) {
 		rs_free_iomappings(rs);
 		if (rs->cm_id->qp) {
-			printf("%s %ld rs_free rs->index:%d will ibv_ack_cq_events, and rdma_destroy_qp rs %d\n",log1_Time(),getNs(),rs->index,rs->cm_id->qp->qp_num);
+			// printf("%s %ld rs_free rs->index:%d will ibv_ack_cq_events, and rdma_destroy_qp rs %d\n",log1_Time(),getNs(),rs->index,rs->cm_id->qp->qp_num);
 			ibv_ack_cq_events(rs->cm_id->recv_cq, rs->unack_cqe);
 			rdma_destroy_qp(rs->cm_id);
 		}
@@ -1152,10 +1156,10 @@ static void rs_free(struct rsocket *rs)
 		close(rs->accept_queue[1]);
 	}
 
-	pid_t pid=getpid();
-	pthread_t tid=pthread_self();
+	// pid_t pid=getpid();
+	// pthread_t tid=pthread_self();
 
-	printf("%s %ld rs_free parent pid:%u tid:%lx freed rs %d\n",log1_Time(),getNs(),(unsigned int)pid,tid,rs->index);
+	// printf("%s %ld rs_free parent pid:%u tid:%lx freed rs %d\n",log1_Time(),getNs(),(unsigned int)pid,tid,rs->index);
 
 	fastlock_destroy(&rs->map_lock);
 	fastlock_destroy(&rs->cq_wait_lock);
@@ -1262,11 +1266,11 @@ static int ds_init_ep(struct rsocket *rs)
 
 int rsocket(int domain, int type, int protocol)
 {
-	pid_t pid=getpid();
-	pthread_t tid=pthread_self();
+	// pid_t pid=getpid();
+	// pthread_t tid=pthread_self();
 
 
-	printf("%s %ld rsocket start: pid:%u tid:%u\n",log1_Time(),getNs(),(unsigned int)pid,(unsigned int)tid);
+	// printf("%s %ld rsocket start: pid:%u tid:%u\n",log1_Time(),getNs(),(unsigned int)pid,(unsigned int)tid);
 	struct rsocket *rs;
 	int index, ret;
 
@@ -1300,12 +1304,12 @@ int rsocket(int domain, int type, int protocol)
 	ret = rs_insert(rs, index);
 	if (ret < 0)
 		goto err;
-	printf("%s %ld rsocket start: rs->index:%d\n",log1_Time(),getNs(),rs->index);
+	// printf("%s %ld rsocket start: rs->index:%d\n",log1_Time(),getNs(),rs->index);
 
 	return rs->index;
 
 err:
-	printf("%s %ld rsocket start but rs_free\n",log1_Time(),getNs());
+	// printf("%s %ld rsocket start but rs_free\n",log1_Time(),getNs());
 
 	rs_free(rs);
 	return ret;
@@ -1369,7 +1373,7 @@ int rlisten(int socket, int backlog)
 		return ret;
 
 	rs->state = rs_listening;
-	printf("%s %ld rsocket debug: rlisten socket:%d, backlog:%d, rs->index:%d\n",log1_Time(),getNs(),socket,backlog,rs->index);
+	// printf("%s %ld rsocket debug: rlisten socket:%d, backlog:%d, rs->index:%d\n",log1_Time(),getNs(),socket,backlog,rs->index);
 
 	return 0;
 }
@@ -1422,7 +1426,7 @@ static void rs_accept(struct rsocket *rs)
 	return;
 
 err:
-	printf("%s %ld rs_accept err, will rdma_reject, rs %d, new_rs->state:%d\n",log1_Time(),getNs(),new_rs->index,new_rs->state);
+	// printf("%s %ld rs_accept err, will rdma_reject, rs %d, new_rs->state:%d\n",log1_Time(),getNs(),new_rs->index,new_rs->state);
 	rdma_reject(cm_id, NULL, 0);
 	if (new_rs)
 		rs_free(new_rs);
@@ -1442,25 +1446,25 @@ int raccept(int socket, struct sockaddr *addr, socklen_t *addrlen)
 
 	ret = read(rs->accept_queue[0], &new_rs, sizeof(new_rs));
 	if (ret != sizeof(new_rs)){
-		// printf("%s %ld raccept return after read socket:%d, new_rs:%d, new_rs->qp %d\n",log1_Time(),getNs(),socket,new_rs->index,new_rs->cm_id->qp->qp_num);
+		// // printf("%s %ld raccept return after read socket:%d, new_rs:%d, new_rs->qp %d\n",log1_Time(),getNs(),socket,new_rs->index,new_rs->cm_id->qp->qp_num);
 		return ret;
 	}
 
 	if (addr && addrlen)
 		rgetpeername(new_rs->index, addr, addrlen);
 
-struct sockaddr_in *ipv4 = (struct sockaddr_in *)addr;
-char ipAddress[INET_ADDRSTRLEN];
+	// struct sockaddr_in *ipv4 = (struct sockaddr_in *)addr;
+	// char ipAddress[INET_ADDRSTRLEN];
 
-inet_ntop(AF_INET, &(ipv4->sin_addr), ipAddress, INET_ADDRSTRLEN);
+	// inet_ntop(AF_INET, &(ipv4->sin_addr), ipAddress, INET_ADDRSTRLEN);
 
- int port = ntohs(ipv4->sin_port);
+	//  int port = ntohs(ipv4->sin_port);
 
-	printf("%s %ld raccept addr %s %d, new_rs:%d, new_rs->qp %d\n",log1_Time(),getNs(),ipAddress,port,new_rs->index,new_rs->cm_id->qp->qp_num);
+	// printf("%s %ld raccept addr %s %d, new_rs:%d, new_rs->qp %d\n",log1_Time(),getNs(),ipAddress,port,new_rs->index,new_rs->cm_id->qp->qp_num);
 	/* The app can still drive the CM state on failure */
 	int save_errno = errno;
-	// rs_notify_svc(&connect_svc, new_rs, RS_SVC_ADD_CM);
-	rs_notify_svc(&accept_svc, new_rs, RS_SVC_ADD_CM);
+	rs_notify_svc(&connect_svc, new_rs, RS_SVC_ADD_CM);
+	// rs_notify_svc(&accept_svc, new_rs, RS_SVC_ADD_CM);
 	errno = save_errno;
 	return new_rs->index;
 }
@@ -1486,9 +1490,9 @@ resolve_addr:
 			rs->state = rs_resolving_addr;
 		break;
 	case rs_resolving_addr:
-		// pid_t pid=getpid();
-	// pthread_t tid=pthread_self();
-		printf("%s %ld rsocket debug: case rs_resolving_addr: rs->index:%d ucma_complete(%d)\n",log1_Time(),getNs(),rs->index,rs->cm_id->channel->fd);
+		// // pid_t pid=getpid();
+	// // pthread_t tid=pthread_self();
+		// printf("%s %ld rsocket debug: case rs_resolving_addr: rs->index:%d ucma_complete(%d)\n",log1_Time(),getNs(),rs->index,rs->cm_id->channel->fd);
 		ret = ucma_complete(rs->cm_id);
 		if (ret) {
 			if (errno == ETIMEDOUT && rs->retries <= RS_CONN_RETRIES)
@@ -1519,7 +1523,7 @@ resolve_route:
 		break;
 	case rs_resolving_route:
 resolving_route:
-		printf("%s %ld rsocket debug: case resolving_route: rs->index:%d ucma_complete(%d)\n",log1_Time(),getNs(),rs->index,rs->cm_id->channel->fd);
+		// printf("%s %ld rsocket debug: case resolving_route: rs->index:%d ucma_complete(%d)\n",log1_Time(),getNs(),rs->index,rs->cm_id->channel->fd);
 		ret = ucma_complete(rs->cm_id);
 		if (ret) {
 			if (errno == ETIMEDOUT && rs->retries <= RS_CONN_RETRIES)
@@ -1528,7 +1532,7 @@ resolving_route:
 		}
 do_connect:
 		ret = rs_create_ep(rs);
-	printf("%s %ld rconnect rs->qp %d\n",log1_Time(),getNs(),rs->cm_id->qp->qp_num);
+	// printf("%s %ld rconnect rs->qp %d\n",log1_Time(),getNs(),rs->cm_id->qp->qp_num);
 
 		if (ret)
 			break;
@@ -1553,7 +1557,7 @@ do_connect:
 			rs->state = rs_connecting;
 		break;
 	case rs_connecting:
-		printf("%s %ld rsocket debug: case rs_connecting: rs->index:%d ucma_complete(%d)\n",log1_Time(),getNs(),rs->index,rs->cm_id->channel->fd);
+		// printf("%s %ld rsocket debug: case rs_connecting: rs->index:%d ucma_complete(%d)\n",log1_Time(),getNs(),rs->index,rs->cm_id->channel->fd);
 		ret = ucma_complete(rs->cm_id);
 		if (ret)
 			break;
@@ -1571,7 +1575,7 @@ connected:
 		if (!(rs->fd_flags & O_NONBLOCK))
 			set_fd_nonblock(rs->cm_id->channel->fd, true);
 
-		printf("%s %ld rsocket debug: case rs_accepting: rs->index:%d ucma_complete(%d)\n",log1_Time(),getNs(),rs->index,rs->cm_id->channel->fd);
+		// printf("%s %ld rsocket debug: case rs_accepting: rs->index:%d ucma_complete(%d)\n",log1_Time(),getNs(),rs->index,rs->cm_id->channel->fd);
 		ret = ucma_complete(rs->cm_id);
 		if (ret)
 			break;
@@ -2624,7 +2628,7 @@ ssize_t rrecv(int socket, void *buf, size_t len, int flags)
 	rs = idm_at(&idm, socket);
 	if (!rs)
 		return ERR(EBADF);
-	// printf("%s %ld rsocket debug: rrecv socket:%d, len:%ld, rs->index:%d\n",log1_Time(),getNs(),socket,len,rs->index);
+	// // printf("%s %ld rsocket debug: rrecv socket:%d, len:%ld, rs->index:%d\n",log1_Time(),getNs(),socket,len,rs->index);
 
 	if (rs->type == SOCK_DGRAM) {
 		fastlock_acquire(&rs->rlock);
@@ -2690,7 +2694,7 @@ ssize_t rrecv(int socket, void *buf, size_t len, int flags)
 ssize_t rrecvfrom(int socket, void *buf, size_t len, int flags,
 		  struct sockaddr *src_addr, socklen_t *addrlen)
 {
-	printf("rsocket debug: rrecvfrom fd:%d \n",socket);
+	// printf("rsocket debug: rrecvfrom fd:%d \n",socket);
 
 	struct rsocket *rs;
 	int ret;
@@ -2903,7 +2907,7 @@ ssize_t rsend(int socket, const void *buf, size_t len, int flags)
 	rs = idm_at(&idm, socket);
 	if (!rs)
 		return ERR(EBADF);
-	// printf("%s %ld rsocket debug: rsend socket:%d, len:%ld, rs->index:%d\n",log1_Time(),getNs(),socket,len,rs->index);
+	// // printf("%s %ld rsocket debug: rsend socket:%d, len:%ld, rs->index:%d\n",log1_Time(),getNs(),socket,len,rs->index);
 
 	if (rs->type == SOCK_DGRAM) {
 		fastlock_acquire(&rs->slock);
@@ -3638,7 +3642,7 @@ out:
 		ibv_req_notify_cq(rs->cm_id->recv_cq, 0);
 		ucma_shutdown(rs->cm_id);
 	}
-	printf("%s %ld rsocket debug: rshutdown socket:%d, rs->index:%d\n",log1_Time(),getNs(),socket,rs->index);
+	// printf("%s %ld rsocket debug: rshutdown socket:%d, rs->index:%d\n",log1_Time(),getNs(),socket,rs->index);
 
 	return ret;
 }
@@ -3665,11 +3669,11 @@ int rclose(int socket)
 	rs = idm_lookup(&idm, socket);
 	if (!rs)
 		return EBADF;
-	printf("%s %ld rsocket debug: rclose socket:%d, rs->index:%d\n",log1_Time(),getNs(),socket,rs->index);
+	// printf("%s %ld rsocket debug: rclose socket:%d, rs->index:%d\n",log1_Time(),getNs(),socket,rs->index);
 
 	if (rs->type == SOCK_STREAM) {
 		if (rs->state & rs_connected){
-			printf("%s %ld rsocket debug: rclose socket:%d, rs->index:%d need shutdown\n",log1_Time(),getNs(),socket,rs->index);
+			// printf("%s %ld rsocket debug: rclose socket:%d, rs->index:%d need shutdown\n",log1_Time(),getNs(),socket,rs->index);
 
 			rshutdown(socket, SHUT_RDWR);
 		}else{
@@ -3681,7 +3685,7 @@ int rclose(int socket)
 			rs_notify_svc(&listen_svc, rs, RS_SVC_REM_CM);
 		if (rs->opts & RS_OPT_CM_SVC){
 				rs_notify_svc(&connect_svc, rs, RS_SVC_REM_CM);
-				rs_notify_svc(&accept_svc, rs, RS_SVC_REM_CM);
+				// rs_notify_svc(&accept_svc, rs, RS_SVC_REM_CM);
 		}
 
 	} else {
@@ -4394,7 +4398,7 @@ static int rs_svc_rm_rs(struct rs_svc *svc, struct rsocket *rs)
 		svc->cnt--;
 		return 0;
 	}
-	printf("%s %ld rsocket debug: rs_svc_rm_rs %d\n",log1_Time(),getNs(),rs->index);
+	// printf("%s %ld rsocket debug: rs_svc_rm_rs %d\n",log1_Time(),getNs(),rs->index);
 
 	return EBADF;
 }
@@ -4733,7 +4737,7 @@ static void *tcp_svc_run(void *arg)
 static void rs_handle_cm_event(struct rsocket *rs)
 {
 	int ret;
-	// printf("%s %ld rsocket debug: rs_handle_cm_event rs->index:%d, rs->state:%d\n",log1_Time(),getNs(),rs->index,rs->state);
+	// // printf("%s %ld rsocket debug: rs_handle_cm_event rs->index:%d, rs->state:%d\n",log1_Time(),getNs(),rs->index,rs->state);
 
 	if (rs->state & rs_opening) {
 		rs_do_connect(rs);
@@ -4741,7 +4745,7 @@ static void rs_handle_cm_event(struct rsocket *rs)
 		ret = ucma_complete(rs->cm_id);
 		if (!ret && rs->cm_id->event && (rs->state & rs_connected) &&
 		    (rs->cm_id->event->event == RDMA_CM_EVENT_DISCONNECTED)){
-			printf("%s %ld rsocket debug: rs_handle_cm_event RDMA_CM_EVENT_DISCONNECTED rs->index:%d ucma_complete(%d)\n",log1_Time(),getNs(),rs->index,rs->cm_id->channel->fd);
+			// printf("%s %ld rsocket debug: rs_handle_cm_event RDMA_CM_EVENT_DISCONNECTED rs->index:%d ucma_complete(%d)\n",log1_Time(),getNs(),rs->index,rs->cm_id->channel->fd);
 			rs->state = rs_disconnected;
 // rdma_disconnect(rs->cm_id);
 			}
@@ -4808,7 +4812,7 @@ static void *cm_svc_run(void *arg)
 			cm_svc_process_sock(svc);
 			fds = svc->contexts;
 			if (fds!=svc->contexts) {
-				printf("%s %ld rsocket debug: cm_svc_run fds(%p) svc->contexts(%p)\n",log1_Time(),getNs(),fds,svc->contexts);
+				// printf("%s %ld rsocket debug: cm_svc_run fds(%p) svc->contexts(%p)\n",log1_Time(),getNs(),fds,svc->contexts);
 			}
 		}
 
